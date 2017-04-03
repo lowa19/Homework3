@@ -24,6 +24,7 @@ public class CannonAnimator implements Animator {
 	private Cannonball myCannonBall;
 	private ArrayList<Targets> targets;
 	private int numTargets = 3;
+	private double gravity = 9.8;
 
 	public CannonAnimator()
 	{
@@ -47,9 +48,6 @@ public class CannonAnimator implements Animator {
 		myCannonBall = new Cannonball(10, myCannon.getCannonMuzzleX(),
 				myCannon.getCannonMuzzleY(), myCannon.getPowerX(), myCannon.getPowerY());
 	}
-
-
-
 	/**
 	 * Interval between animation frames: .03 seconds (i.e., about 33 times
 	 * per second).
@@ -145,9 +143,6 @@ public class CannonAnimator implements Animator {
 		{
 			goBackwards = !goBackwards;
 		}
-
-		shootCannon();
-
 	}
 	
 	

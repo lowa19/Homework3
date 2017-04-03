@@ -53,9 +53,13 @@ public class Cannonball {
         return false;
     }
 
-    public void updatePosition()
+    public void updatePosition(double gravity)
     {
         //changes the x and y coordinates of the cannonball
+        int changeX = (int)xVelocity; //x=vt+1/2at^2, a = 0, t = 1
+        int changeY = (int)(yVelocity + .5*gravity); //y=vt+1/2at^2, a = gravity, t = 1
+        xCoor = xCoor + changeX;
+        yCoor = yCoor + changeY;
     }
 
 }

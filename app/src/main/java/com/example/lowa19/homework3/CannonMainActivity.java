@@ -51,7 +51,7 @@ public class CannonMainActivity extends Activity implements SeekBar.OnSeekBarCha
 
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
+		//TODO:change the angle of the cannon
 	}
 
 	@Override
@@ -67,5 +67,10 @@ public class CannonMainActivity extends Activity implements SeekBar.OnSeekBarCha
 	@Override
 	public void onClick(View v) {
 		cannonAnim.shootCannon();
+	}
+
+	public TextView getStatusText()
+	{
+		return this.statusText;
 	}
 }

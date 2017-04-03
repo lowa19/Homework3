@@ -51,6 +51,7 @@ public class Cannon
 
     public void shiftCannon()
     {
+        //TODO:finish this method
         //changes coordinates of each of the points
         //using the updated cannonAngle
     }

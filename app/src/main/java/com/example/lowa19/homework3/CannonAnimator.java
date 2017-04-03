@@ -22,6 +22,7 @@ public class CannonAnimator implements Animator {
 
 	private Cannon myCannon;
 	private Cannonball myCannonBall;
+	private ArrayList<Cannonball> cannonballs;
 	private ArrayList<Targets> targets;
 	private int numTargets = 3;
 	private double gravity = 9.8;
@@ -31,6 +32,7 @@ public class CannonAnimator implements Animator {
 		myCannon = new Cannon(100);
 		targets = new ArrayList<>();
 		constructTargets();
+		cannonballs = new ArrayList<>();
 	}
 
 	public void constructTargets()
@@ -47,6 +49,21 @@ public class CannonAnimator implements Animator {
 	{
 		myCannonBall = new Cannonball(10, myCannon.getCannonMuzzleX(),
 				myCannon.getCannonMuzzleY(), myCannon.getPowerX(), myCannon.getPowerY());
+		cannonballs.add(myCannonBall);
+	}
+	public void checkIfHit()
+	{
+		//TODO: have this method change the text in statusText
+		for (Cannonball b: cannonballs)
+		{
+			for (Targets t: targets)
+			{
+				if(b.hitTarget(t))
+				{
+					targets.remove(t);
+				}
+			}
+		}
 	}
 	/**
 	 * Interval between animation frames: .03 seconds (i.e., about 33 times
@@ -67,53 +84,30 @@ public class CannonAnimator implements Animator {
 		// create/return the background color
 		return Color.rgb(180, 200, 255);
 	}
-	
-	/**
-	 * Tells the animation whether to go backwards.
-	 * 
-	 * @param b true iff animation is to go backwards.
-	 */
-	public void goBackwards(boolean b) {
-		// set our instance variable
-		goBackwards = b;
-	}
-	
+
 	/**
 	 * Action to perform on clock tick
 	 * 
 	 * @param g the graphics object on which to draw
 	 */
 	public void tick(Canvas g) {
-		// bump our count either up or down by one, depending on whether
-		// we are in "backwards mode".
-		if (goBackwards) {
-			count--;
-		}
-		else {
-			count++;
-		}
-
-		// Determine the pixel position of our ball.  Multiplying by 15
-		// has the effect of moving 15 pixel per frame.  Modding by 600
-		// (with the appropriate correction if the value was negative)
-		// has the effect of "wrapping around" when we get to either end
-		// (since our canvas size is 600 in each dimension).
-		int num = (count*15)%600;
-		if (num < 0) num += 600;
-
-		// Draw the ball in the correct position.
-		Paint redPaint = new Paint();
-		redPaint.setColor(Color.RED);
-		g.drawCircle(num, num, 60, redPaint);
-
+		//draw all of the objects on the canvas
 		myCannon.drawMe(g);
-		myCannonBall.drawMe(g);
+		for (Cannonball b: cannonballs)
+		{
+			b.drawMe(g);
+		}
 		for (Targets t:targets)
 		{
 			t.drawMe(g);
 		}
-
-
+		//check if any of the targets are hit
+		checkIfHit();
+		//update the cannonball positions
+		for (Cannonball b:cannonballs)
+		{
+			b.updatePosition(gravity);
+		}
 	}
 
 	/**
@@ -144,7 +138,5 @@ public class CannonAnimator implements Animator {
 			goBackwards = !goBackwards;
 		}
 	}
-	
-	
 
 }//class TextAnimator

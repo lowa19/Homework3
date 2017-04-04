@@ -43,6 +43,11 @@ public class Cannonball {
         return this.yCoor;
     }
 
+    /**
+     *
+     * @param t the targets displayed on the screen
+     * @return return true if the cannonball overlaps any of the targets
+     */
     public boolean hitTarget(Targets t)
     {
         if(xCoor+radius >= t.getxTopLeft() && yCoor+radius >= t.getyTopLeft()
@@ -53,6 +58,11 @@ public class Cannonball {
         return false;
     }
 
+    /**
+     * This method changes the position of a cannonball object for each tick
+     * uses gravity and calculates the change in distance using physics equations
+     * @param gravity
+     */
     public void updatePosition(double gravity)
     {
         //changes the x and y coordinates of the cannonball

@@ -26,6 +26,8 @@ public class CannonAnimator implements Animator {
 	private ArrayList<Targets> targets;
 	private int numTargets = 3;
 	private double gravity = 9.8;
+	Point startDrag = new Point(0,0);
+	Point endDrag = new Point(0,0);
 
 	public CannonAnimator()
 	{
@@ -39,8 +41,9 @@ public class CannonAnimator implements Animator {
 	{
 		for(int i = 0; i < numTargets; i++)
 		{
-			int random = (int)(100*Math.random());
-			Targets temp = new Targets(500 + random, 500, 600 + random, 600);
+			int randomX = (int)(800*Math.random());
+			int randomY = (int)(1000*Math.random());
+			Targets temp = new Targets(700 + randomX, 400 + randomY, 800 + randomX, 500 + randomY);
 			targets.add(temp);
 		}
 	}
@@ -61,6 +64,7 @@ public class CannonAnimator implements Animator {
 				if(b.hitTarget(t))
 				{
 					targets.remove(t);
+					cannonballs.remove(b);
 				}
 			}
 		}
@@ -127,16 +131,46 @@ public class CannonAnimator implements Animator {
 	public boolean doQuit() {
 		return false;
 	}
-	
+
 	/**
-	 * reverse the ball's direction when the screen is tapped
-	 */
+	 * used to change cannon angle by dragging finger on screen
+	 * @param event a MotionEvent describing the touch
+     */
 	public void onTouch(MotionEvent event)
 	{
+		double angle;
 		if (event.getAction() == MotionEvent.ACTION_DOWN)
 		{
-			goBackwards = !goBackwards;
+			startDrag.x = (int)event.getX();
+			startDrag.y = (int)event.getY();
 		}
+		else if ( event.getAction() == MotionEvent.ACTION_UP)
+		{
+			endDrag.x = (int)event.getX();
+			endDrag.y = (int)event.getY();
+			angle = calculateAngle(startDrag, endDrag);
+			myCannon.shiftCannon(angle);
+		}
+
 	}
 
+	/**
+	 * Use dot product formula with distances between points
+	 * and cannon point of rotation ( a.b = |a||b|cos(angle) )
+	 * @param start
+	 * @param end
+     * @return angle
+     */
+	public double calculateAngle(Point start, Point end)
+	{
+		double theta;
+		double alphaX = start.x - myCannon.getRotationAxisX();
+		double alphaY = start.y - myCannon.getRotationAxisY();
+		double betaX = end.x - myCannon.getRotationAxisX();
+		double betaY = end.y - myCannon.getRotationAxisY();
+		double magnitudeAlpha = Math.sqrt( (alphaX*alphaX) + (alphaY*alphaY));
+		double magnitudeBeta = Math.sqrt((betaX*betaX) + (betaY*betaY));
+		theta = Math.cosh(((alphaX*betaX)+(alphaY*betaY))/(magnitudeAlpha*magnitudeBeta));
+		return theta;
+	}
 }//class TextAnimator

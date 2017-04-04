@@ -19,12 +19,12 @@ import android.widget.TextView;
  * @version September 2012
  * 
  */
-public class CannonMainActivity extends Activity implements SeekBar.OnSeekBarChangeListener, View.OnClickListener{
+public class MainActivity extends Activity implements SeekBar.OnSeekBarChangeListener, View.OnClickListener{
 
 	private SeekBar aimSeekBar;
 	private Button fireButton;
 	private TextView statusText;
-	private CannonAnimator cannonAnim;
+	private Animator cannonAnim;
 	/**
 	 * creates an AnimationCanvas containing a TestAnimator.
 	 */
@@ -66,7 +66,7 @@ public class CannonMainActivity extends Activity implements SeekBar.OnSeekBarCha
 
 	@Override
 	public void onClick(View v) {
-		cannonAnim.shootCannon();
+		//cannonAnim.shootCannon();
 	}
 
 	public TextView getStatusText()

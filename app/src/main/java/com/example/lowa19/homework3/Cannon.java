@@ -2,6 +2,7 @@ package com.example.lowa19.homework3;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
@@ -14,10 +15,12 @@ public class Cannon
     private Paint cannonPaint, wheelPaint;
     private Point topLeft, topRight, bottomLeft, bottomRight;
     private Path cannonBody;
-    private int cannonAngle;
-    private int wheelRadius = 15;
+    private double cannonAngle = 0;
+    int maxAngle = 90;
+    int minAngle = 0;
+    private int wheelRadius = 50;
     private int x = 100;
-    private int y = 100;
+    private int y = 1200;
     private int power;
 
     public Cannon(int initPower)
@@ -28,11 +31,10 @@ public class Cannon
         wheelPaint = new Paint();
         wheelPaint.setColor(Color.YELLOW);
         wheelPaint.setStyle(Paint.Style.FILL);
-        topLeft = new Point(x + 50, y);
-        topRight = new Point(x + 50, y+50);
+        topLeft = new Point(x, y -100);
+        topRight = new Point(x + 300, y - 100);
         bottomLeft = new Point(x, y);
-        bottomRight = new Point (x, y + 50);
-        cannonAngle = 0;
+        bottomRight = new Point (x + 300, y);
         power = initPower;
     }
 
@@ -49,11 +51,21 @@ public class Cannon
         canvas.drawCircle(x,y, wheelRadius, wheelPaint);
     }
 
-    public void shiftCannon()
+    /**
+     * using Matrix, rotate path given the change in angle
+     * @param angle is the progress from seekbar
+     */
+    public void shiftCannon(double angle)
     {
-        //TODO:finish this method
-        //changes coordinates of each of the points
-        //using the updated cannonAngle
+        double resultingAngle = cannonAngle + angle;
+
+        if(resultingAngle <= maxAngle && resultingAngle >= minAngle) //limitations
+        {
+            Matrix matrix = new Matrix();
+            matrix.setRotate((float)angle, x, y);
+            cannonBody.transform(matrix); //rotate path
+            cannonAngle = resultingAngle; //change the saved value for angle
+        }
     }
     /**
      * Used to set initial position of the cannonball
@@ -74,6 +86,16 @@ public class Cannon
     {
         int midY = (topRight.y + bottomRight.y)/2;
         return midY;
+    }
+
+    public int getRotationAxisX()
+    {
+        return this.x;
+    }
+
+    public int getRotationAxisY()
+    {
+        return this.y;
     }
 
     public int getCannonAngle()

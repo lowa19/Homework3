@@ -1,6 +1,8 @@
 package com.example.lowa19.homework3;
 
+import android.content.Context;
 import android.graphics.*;
+import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 
 import java.util.ArrayList;
@@ -16,88 +18,42 @@ import java.util.ArrayList;
  */
 public class CannonAnimator implements Animator {
 
-	// instance variables
-	private int count = 0; // counts the number of logical clock ticks
-	private boolean goBackwards = false; // whether clock is ticking backwards
-
 	private Cannon myCannon;
-	private Cannonball myCannonBall;
-	private ArrayList<Cannonball> cannonballs;
+	private FireButtonRect myFireButton;
+	private ArrayList<Cannonball> activeCannonballs, idleCannonBalls;
 	private ArrayList<Targets> targets;
-	private int numTargets = 3;
+	private int numTargets = 4;
+	private int cannonBallRadius = 30;
+	private int cannonPower = 50;
 	private double gravity = 9.8;
 	Point startDrag = new Point(0,0);
 	Point endDrag = new Point(0,0);
 
 	public CannonAnimator()
 	{
-		myCannon = new Cannon(100);
+		myCannon = new Cannon(cannonPower);
+		myFireButton = new FireButtonRect();
 		targets = new ArrayList<>();
 		constructTargets();
-		cannonballs = new ArrayList<>();
-	}
+		activeCannonballs = new ArrayList<>();
+	}//ctor
 
-	public void constructTargets()
-	{
-		for(int i = 0; i < numTargets; i++)
-		{
-			int randomX = (int)(800*Math.random());
-			int randomY = (int)(1000*Math.random());
-			Targets temp = new Targets(700 + randomX, 400 + randomY, 800 + randomX, 500 + randomY);
-			targets.add(temp);
-		}
-	}
-
-	public void shootCannon()
-	{
-		myCannonBall = new Cannonball(10, myCannon.getCannonMuzzleX(),
-				myCannon.getCannonMuzzleY(), myCannon.getPowerX(), myCannon.getPowerY());
-		cannonballs.add(myCannonBall);
-	}
-	public void checkIfHit()
-	{
-		//TODO: have this method change the text in statusText
-		for (Cannonball b: cannonballs)
-		{
-			for (Targets t: targets)
-			{
-				if(b.hitTarget(t))
-				{
-					targets.remove(t);
-					cannonballs.remove(b);
-				}
-			}
-		}
-	}
-	/**
-	 * Interval between animation frames: .03 seconds (i.e., about 33 times
-	 * per second).
-	 * 
-	 * @return the time interval between frames, in milliseconds.
-	 */
 	public int interval() {
 		return 30;
 	}
-	
-	/**
-	 * The background color: a light blue.
-	 * 
-	 * @return the background color onto which we will draw the image.
-	 */
-	public int backgroundColor() {
-		// create/return the background color
-		return Color.rgb(180, 200, 255);
-	}
+
+	public int backgroundColor() { return Color.rgb(180, 200, 255); }
 
 	/**
 	 * Action to perform on clock tick
-	 * 
+	 *
 	 * @param g the graphics object on which to draw
 	 */
 	public void tick(Canvas g) {
 		//draw all of the objects on the canvas
+		myFireButton.drawMe(g);
 		myCannon.drawMe(g);
-		for (Cannonball b: cannonballs)
+		for (Cannonball b: activeCannonballs)
 		{
 			b.drawMe(g);
 		}
@@ -105,40 +61,42 @@ public class CannonAnimator implements Animator {
 		{
 			t.drawMe(g);
 		}
-		//check if any of the targets are hit
-		checkIfHit();
+		//check if any of the targets are hit or cannonball hit ground
+		checkIfHit(g);
+
 		//update the cannonball positions
-		for (Cannonball b:cannonballs)
+		for (Cannonball b:activeCannonballs)
 		{
-			b.updatePosition(gravity);
+			b.updatePosition();
+		}
+		for (Targets t: targets)
+		{
+			t.moveTargets();
 		}
 	}
 
-	/**
-	 * Tells that we never pause.
-	 * 
-	 * @return indication of whether to pause
-	 */
 	public boolean doPause() {
 		return false;
 	}
 
-	/**
-	 * Tells that we never stop the animation.
-	 * 
-	 * @return indication of whether to quit.
-	 */
 	public boolean doQuit() {
 		return false;
 	}
 
 	/**
 	 * used to change cannon angle by dragging finger on screen
+	 * or fires cannon if the 'button' is touched
 	 * @param event a MotionEvent describing the touch
      */
 	public void onTouch(MotionEvent event)
 	{
+		int xPos = (int)event.getX();
+		int yPos = (int)event.getY();
 		double angle;
+		if(myFireButton.fireClick(xPos,yPos))
+		{
+			shootCannon();
+		}
 		if (event.getAction() == MotionEvent.ACTION_DOWN)
 		{
 			startDrag.x = (int)event.getX();
@@ -151,8 +109,72 @@ public class CannonAnimator implements Animator {
 			angle = calculateAngle(startDrag, endDrag);
 			myCannon.shiftCannon(angle);
 		}
+	}//onTouch
 
-	}
+	/**
+	 * creates cannonballs starting at tip of cannon
+	 */
+	public void shootCannon()
+	{
+		 Cannonball myCannonBall = new Cannonball(cannonBallRadius, myCannon.getCannonMuzzleX(),
+				myCannon.getCannonMuzzleY(), myCannon.getPowerX(), myCannon.getPowerY(), gravity);
+		activeCannonballs.add(myCannonBall);
+	}//shootCannon
+
+	/**
+	 * creates targets at random locations and adds to arraylist
+	 */
+	public void constructTargets()
+	{
+		for(int i = 0; i < numTargets; i++)
+		{
+			int randomX = (int)((1700 - myCannon.getCannonMuzzleX())*Math.random());
+			int randomY = (int)(myCannon.getGroundHeight()*Math.random());
+			if(randomY == myCannon.getGroundHeight())
+			{
+				randomY = randomY -100;
+			}
+			Targets temp = new Targets(myCannon.getCannonMuzzleX() + randomX, randomY,
+					myCannon.getCannonMuzzleX() + 100 + randomX, 100 + randomY);
+			targets.add(temp);
+		}
+	}//constructTargets
+
+	/**
+	 * goes through each cannonball in the array
+	 * if the cannonball hits a target, they both get removed
+	 * sends a HIT  message to the GUI
+	 */
+	public void checkIfHit(Canvas canvas)
+	{
+		ArrayList<Cannonball> removeBalls = new ArrayList<>();
+		ArrayList<Targets> removeTargets = new ArrayList<>();
+		for (Cannonball b: activeCannonballs)
+		{
+			if((b.getyCoor()+b.getRadius()) >= myCannon.getGroundHeight()) //check if hits ground
+			{
+				b.rolling();
+			}
+			if ((b.getxCoor() + b.getRadius()) >= 2000) //check if goes off screen
+			{
+				removeBalls.add(b);
+			}
+			else {
+				for (Targets t : targets) {
+					if (b.hitTarget(t)) {
+						Paint textPaint = new Paint();
+						textPaint.setColor(Color.WHITE);
+						textPaint.setTextSize(50);
+						canvas.drawText("HIT!", t.xTopLeft, t.yTopLeft, textPaint);
+						removeTargets.add(t);
+						removeBalls.add(b);
+					}
+				}
+			}
+		}
+		activeCannonballs.removeAll(removeBalls);
+		targets.removeAll(removeTargets);
+	}//checkIfHit
 
 	/**
 	 * Use dot product formula with distances between points
@@ -170,7 +192,8 @@ public class CannonAnimator implements Animator {
 		double betaY = end.y - myCannon.getRotationAxisY();
 		double magnitudeAlpha = Math.sqrt( (alphaX*alphaX) + (alphaY*alphaY));
 		double magnitudeBeta = Math.sqrt((betaX*betaX) + (betaY*betaY));
-		theta = Math.cosh(((alphaX*betaX)+(alphaY*betaY))/(magnitudeAlpha*magnitudeBeta));
+		theta = Math.acos(((alphaX*betaX)+(alphaY*betaY))/(magnitudeAlpha*magnitudeBeta));
+		theta = theta*(180/Math.PI); //convert radians to degrees
 		return theta;
-	}
+	}//calculateAngle
 }//class TextAnimator

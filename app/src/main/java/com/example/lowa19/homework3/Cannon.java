@@ -6,6 +6,7 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
+import android.graphics.Rect;
 
 /**
  * Created by lowa19 on 4/2/2017.
@@ -40,6 +41,7 @@ public class Cannon
 
     public void drawMe(Canvas canvas)
     {
+        //draw cannon
         cannonBody = new Path();
         cannonBody.moveTo(bottomLeft.x, bottomLeft.y);
         cannonBody.lineTo(topLeft.x, topLeft.y);
@@ -49,6 +51,12 @@ public class Cannon
         cannonBody.close();
         canvas.drawPath(cannonBody, cannonPaint);
         canvas.drawCircle(x,y, wheelRadius, wheelPaint);
+        //draw 'ground'
+        Paint grass = new Paint();
+        grass.setColor(Color.GREEN);
+        grass.setStyle(Paint.Style.FILL);
+        Rect ground = new Rect(0, y + wheelRadius, 2000, 2000);
+        canvas.drawRect(ground, grass);
     }
 
     /**
@@ -98,16 +106,6 @@ public class Cannon
         return this.y;
     }
 
-    public int getCannonAngle()
-    {
-        return this.getCannonAngle();
-    }
-
-    public void setCannonAngle(int angle)
-    {
-        this.cannonAngle = angle;
-    }
-
     /**
      * Used to set initial velocity of the cannonball
      * @return using set force that the cannon exerts
@@ -128,6 +126,11 @@ public class Cannon
     {
         double forceY = power*Math.sin(cannonAngle);
         return forceY;
+    }
+
+    public int getGroundHeight()
+    {
+        return (this.y + this.wheelRadius);
     }
 
 }

@@ -19,12 +19,7 @@ import android.widget.TextView;
  * @version September 2012
  * 
  */
-public class MainActivity extends Activity implements SeekBar.OnSeekBarChangeListener, View.OnClickListener{
-
-	private SeekBar aimSeekBar;
-	private Button fireButton;
-	private TextView statusText;
-	private Animator cannonAnim;
+public class MainActivity extends Activity{
 	/**
 	 * creates an AnimationCanvas containing a TestAnimator.
 	 */
@@ -34,43 +29,9 @@ public class MainActivity extends Activity implements SeekBar.OnSeekBarChangeLis
 		setContentView(R.layout.activity_main);
 
 		// Create an animation canvas and place it in the main layout
-		cannonAnim = new CannonAnimator();
+		Animator cannonAnim = new CannonAnimator();
 		AnimationCanvas myCanvas = new AnimationCanvas(this, cannonAnim);
 		LinearLayout mainLayout = (LinearLayout) this.findViewById(R.id.topLevelLayout);
 		mainLayout.addView(myCanvas);
-
-		//get references to GUI
-		aimSeekBar = (SeekBar) findViewById(R.id.aimCannonSeekBar);
-		fireButton = (Button) findViewById(R.id.fireButton);
-		statusText = (TextView) findViewById(R.id.statusText);
-
-		//register listeners
-		aimSeekBar.setOnSeekBarChangeListener(this);
-		fireButton.setOnClickListener(this);
-	}
-
-	@Override
-	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-		//TODO:change the angle of the cannon
-	}
-
-	@Override
-	public void onStartTrackingTouch(SeekBar seekBar) {
-
-	}
-
-	@Override
-	public void onStopTrackingTouch(SeekBar seekBar) {
-
-	}
-
-	@Override
-	public void onClick(View v) {
-		//cannonAnim.shootCannon();
-	}
-
-	public TextView getStatusText()
-	{
-		return this.statusText;
 	}
 }

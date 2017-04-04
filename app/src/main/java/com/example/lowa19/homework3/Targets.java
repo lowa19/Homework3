@@ -13,6 +13,7 @@ public class Targets {
     Rect target;
     Paint targetPaint;
     int xTopLeft, yTopLeft, xBottomRight, yBottomRight;
+    private boolean upOrDown; //true = up, false = down
 
     public Targets(int initXTopLeft, int initYTopLeft, int initXBottomRight, int initYBottomRight)
     {
@@ -23,6 +24,7 @@ public class Targets {
         targetPaint = new Paint();
         targetPaint.setColor(Color.RED);
         targetPaint.setStyle(Paint.Style.FILL);
+        upOrDown = true;
     }
 
     public void drawMe(Canvas canvas)
@@ -45,5 +47,33 @@ public class Targets {
     public int getyBottomRight()
     {
         return this.yBottomRight;
+    }
+
+    public void moveTargets()
+    {
+        if(this.upOrDown == true)
+        {
+            if(this.yTopLeft <= 0)
+            {
+                this.upOrDown = false;
+            }
+            else
+            {
+                yTopLeft = yTopLeft - 10;
+                yBottomRight = yBottomRight - 10;
+            }
+        }
+        else
+        {
+            if(this.yBottomRight >= 1250)
+            {
+                this.upOrDown = true;
+            }
+            else
+            {
+                yTopLeft = yTopLeft +10;
+                yBottomRight = yBottomRight +10;
+            }
+        }
     }
 }

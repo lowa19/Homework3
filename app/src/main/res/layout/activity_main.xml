@@ -27,12 +27,4 @@
         android:textAlignment="center"
         android:textSize="@dimen/activity_horizontal_margin" />
 
-    <SeekBar
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/aimCannonSeekBar"
-        android:layout_weight="8"
-        android:layout_gravity="center_vertical"
-        android:indeterminate="false" />
-
 </LinearLayout>

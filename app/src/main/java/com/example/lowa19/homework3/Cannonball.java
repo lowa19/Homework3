@@ -10,10 +10,10 @@ import android.graphics.Paint;
 public class Cannonball {
 
     private int radius, xCoor, yCoor;
-    private double xVelocity, yVelocity;
+    private double xVelocity, yVelocity, gravity;
     private Paint ballPaint;
 
-    public Cannonball(int initRadius, int initX, int initY, double initVelocityX, double initVelocityY)
+    public Cannonball(int initRadius, int initX, int initY, double initVelocityX, double initVelocityY, double initGravity)
     {
         ballPaint = new Paint();
         ballPaint.setColor(Color.BLACK);
@@ -23,6 +23,7 @@ public class Cannonball {
         yCoor = initY;
         xVelocity = initVelocityX;
         yVelocity = initVelocityY;
+        gravity = initGravity;
     }
 
     public void drawMe(Canvas canvas)
@@ -61,9 +62,8 @@ public class Cannonball {
     /**
      * This method changes the position of a cannonball object for each tick
      * uses gravity and calculates the change in distance using physics equations
-     * @param gravity
      */
-    public void updatePosition(double gravity)
+    public void updatePosition()
     {
         //changes the x and y coordinates of the cannonball
         int changeX = (int)xVelocity; //x=vt+1/2at^2, a = 0, t = 1
@@ -72,4 +72,13 @@ public class Cannonball {
         yCoor = yCoor + changeY;
     }
 
+    /**
+     * when the cannonball hits the ground
+     * there will no longer be change in y-direction
+     */
+    public void rolling()
+    {
+        this.gravity =  0;
+        this.yVelocity = 0;
+    }
 }

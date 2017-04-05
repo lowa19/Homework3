@@ -16,13 +16,17 @@ public class Cannon
     private Paint cannonPaint, wheelPaint;
     private Point topLeft, topRight, bottomLeft, bottomRight;
     private Path cannonBody;
-    private double cannonAngle = 0;
-    int maxAngle = 90;
-    int minAngle = 0;
+    private double cannonAngle = 0; //in radians
+    double maxAngle = (Math.PI/2);
+    double minAngle = 0;
     private int wheelRadius = 50;
     private int x = 100;
-    private int y = 1200;
+    private int y = 1100; //for smoother view set to 1200
     private int power;
+    private int height = 100;
+    private int width = 300;
+    private double topLeftAngle, topRightAngle, bottomRightAngle;
+    private double topRightDistance;
 
     public Cannon(int initPower)
     {
@@ -32,10 +36,13 @@ public class Cannon
         wheelPaint = new Paint();
         wheelPaint.setColor(Color.YELLOW);
         wheelPaint.setStyle(Paint.Style.FILL);
-        topLeft = new Point(x, y -100);
-        topRight = new Point(x + 300, y - 100);
+        topLeftAngle = (Math.PI/2);
+        bottomRightAngle = 0;
+        initTopRightSpecs();
+        topLeft = new Point(x, y - height);
+        topRight = new Point(x + width, y - height);
         bottomLeft = new Point(x, y);
-        bottomRight = new Point (x + 300, y);
+        bottomRight = new Point (x + width, y);
         power = initPower;
     }
 
@@ -60,8 +67,8 @@ public class Cannon
     }
 
     /**
-     * using Matrix, rotate path given the change in angle
-     * @param angle is the progress from seekbar
+     * changes angle of cannon and modifies points
+     * @param angle is the angle from drag
      */
     public void shiftCannon(double angle)
     {
@@ -69,10 +76,11 @@ public class Cannon
 
         if(resultingAngle <= maxAngle && resultingAngle >= minAngle) //limitations
         {
-            Matrix matrix = new Matrix();
-            matrix.setRotate((float)angle, x, y);
-            cannonBody.transform(matrix); //rotate path
             cannonAngle = resultingAngle; //change the saved value for angle
+            topLeftAngle = topLeftAngle + angle;
+            topRightAngle = topRightAngle + angle;
+            bottomRightAngle = bottomRightAngle + angle;
+            changePoints();
         }
     }
     /**
@@ -124,13 +132,40 @@ public class Cannon
      */
     public double getPowerY()
     {
-        double forceY = power*Math.sin(cannonAngle);
+        double forceY = -(power*Math.sin(cannonAngle));
         return forceY;
     }
 
     public int getGroundHeight()
     {
         return (this.y + this.wheelRadius);
+    }
+
+    /**
+     * sets the angle of the top right point
+     * and finds the distance between that point and the
+     * axis of rotation
+     */
+    public void initTopRightSpecs()
+    {
+        double dHeight = height;
+        double dWidth = width;
+        this.topRightAngle = Math.atan(dHeight/dWidth);
+        this.topRightDistance = Math.sqrt((height*height) + (width*width));
+    }
+
+    /**
+     * changes the points using parametric
+     * coordinates of a circle around translated origin
+     */
+    public void changePoints()
+    {
+        topLeft.x = x + (int)(height*Math.cos(topLeftAngle));
+        topLeft.y = y - (int)(height*Math.sin(topLeftAngle));
+        topRight.x = x + (int)(topRightDistance*Math.cos(topRightAngle));
+        topRight.y = y - (int)(topRightDistance*Math.sin(topRightAngle));
+        bottomRight.x = x + (int)(width *Math.cos(bottomRightAngle));
+        bottomRight.y = y - (int)(width*Math.sin(bottomRightAngle));
     }
 
 }

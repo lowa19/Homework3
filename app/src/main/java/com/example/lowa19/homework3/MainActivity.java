@@ -2,12 +2,7 @@ package com.example.lowa19.homework3;
 
 import android.os.Bundle;
 import android.app.Activity;
-import android.view.Menu;
-import android.view.View;
-import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.SeekBar;
-import android.widget.TextView;
 
 /**
  * CannonMainActivity

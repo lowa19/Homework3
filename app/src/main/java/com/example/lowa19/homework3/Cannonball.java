@@ -12,6 +12,7 @@ public class Cannonball {
     private int radius, xCoor, yCoor;
     private double xVelocity, yVelocity, gravity;
     private Paint ballPaint;
+    private int time; //time that cannonball was released
 
     public Cannonball(int initRadius, int initX, int initY, double initVelocityX, double initVelocityY, double initGravity)
     {
@@ -66,10 +67,11 @@ public class Cannonball {
     public void updatePosition()
     {
         //changes the x and y coordinates of the cannonball
-        int changeX = (int)xVelocity; //x=vt+1/2at^2, a = 0, t = 1
-        int changeY = (int)(yVelocity + .5*gravity); //y=vt+1/2at^2, a = gravity, t = 1
-        xCoor = xCoor + changeX;
-        yCoor = yCoor + changeY;
+        int changeX = (int)xVelocity; //x=vt+1/2at^2, a = 0
+        int changeY = (int)(yVelocity + .5*gravity*time*time); //y=vt+1/2at^2, a = gravity
+        this.xCoor = this.xCoor + changeX;
+        this.yCoor = this.yCoor + changeY;
+        this.time++;
     }
 
     /**

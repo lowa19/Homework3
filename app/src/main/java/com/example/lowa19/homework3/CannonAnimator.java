@@ -20,12 +20,12 @@ public class CannonAnimator implements Animator {
 
 	private Cannon myCannon;
 	private FireButtonRect myFireButton;
-	private ArrayList<Cannonball> activeCannonballs, idleCannonBalls;
+	private ArrayList<Cannonball> activeCannonballs;
 	private ArrayList<Targets> targets;
 	private int numTargets = 4;
 	private int cannonBallRadius = 30;
-	private int cannonPower = 50;
-	private double gravity = 9.8;
+	private int cannonPower = 60;
+	private double gravity = 2.8;
 	Point startDrag = new Point(0,0);
 	Point endDrag = new Point(0,0);
 
@@ -97,15 +97,15 @@ public class CannonAnimator implements Animator {
 		{
 			shootCannon();
 		}
-		if (event.getAction() == MotionEvent.ACTION_DOWN)
+		else if (event.getAction() == MotionEvent.ACTION_DOWN)
 		{
-			startDrag.x = (int)event.getX();
-			startDrag.y = (int)event.getY();
+			startDrag.x = xPos;
+			startDrag.y = yPos;
 		}
 		else if ( event.getAction() == MotionEvent.ACTION_UP)
 		{
-			endDrag.x = (int)event.getX();
-			endDrag.y = (int)event.getY();
+			endDrag.x = xPos;
+			endDrag.y = yPos;
 			angle = calculateAngle(startDrag, endDrag);
 			myCannon.shiftCannon(angle);
 		}
@@ -181,7 +181,7 @@ public class CannonAnimator implements Animator {
 	 * and cannon point of rotation ( a.b = |a||b|cos(angle) )
 	 * @param start
 	 * @param end
-     * @return angle
+     * @return angle in radians
      */
 	public double calculateAngle(Point start, Point end)
 	{
@@ -193,7 +193,11 @@ public class CannonAnimator implements Animator {
 		double magnitudeAlpha = Math.sqrt( (alphaX*alphaX) + (alphaY*alphaY));
 		double magnitudeBeta = Math.sqrt((betaX*betaX) + (betaY*betaY));
 		theta = Math.acos(((alphaX*betaX)+(alphaY*betaY))/(magnitudeAlpha*magnitudeBeta));
-		theta = theta*(180/Math.PI); //convert radians to degrees
+		//theta = theta*(180/Math.PI); //convert radians to degrees
+		if(start.y < end.y)//up to down motion
+		{
+			theta = -theta;
+		}
 		return theta;
 	}//calculateAngle
 }//class TextAnimator

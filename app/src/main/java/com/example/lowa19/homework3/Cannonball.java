@@ -75,11 +75,21 @@ public class Cannonball {
     }
 
     /**
+     * used to see if the cannonball is going to hit ground
+     * @return expected y coordinate of cannonball
+     */
+    public int getPredictedY()
+    {
+        return this.yCoor + (int)(this.yVelocity + .5*this.gravity*this.time*this.time);
+    }
+
+    /**
      * when the cannonball hits the ground
      * there will no longer be change in y-direction
      */
-    public void rolling()
+    public void rolling(Cannon cannon)
     {
+        this.yCoor = cannon.getGroundHeight() - this.radius;
         this.gravity =  0;
         this.yVelocity = 0;
     }

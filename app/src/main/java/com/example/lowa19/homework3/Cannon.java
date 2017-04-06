@@ -1,5 +1,8 @@
 package com.example.lowa19.homework3;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
@@ -7,6 +10,8 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.graphics.Shader;
+import android.graphics.drawable.Drawable;
 
 /**
  * Created by lowa19 on 4/2/2017.
@@ -21,7 +26,7 @@ public class Cannon
     double minAngle = 0;
     private int wheelRadius = 50;
     private int x = 100;
-    private int y = 1100; //for smoother view set to 1200
+    private int y = 1200; //for smoother view set to 1200
     private int power;
     private int height = 100;
     private int width = 300;
@@ -62,7 +67,7 @@ public class Cannon
         Paint grass = new Paint();
         grass.setColor(Color.GREEN);
         grass.setStyle(Paint.Style.FILL);
-        Rect ground = new Rect(0, y + wheelRadius, 2000, 2000);
+        Rect ground = new Rect(0, y + wheelRadius, canvas.getWidth(), canvas.getHeight());
         canvas.drawRect(ground, grass);
     }
 

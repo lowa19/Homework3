@@ -22,12 +22,13 @@ public class CannonAnimator implements Animator {
 	private FireButtonRect myFireButton;
 	private ArrayList<Cannonball> activeCannonballs;
 	private ArrayList<Targets> targets;
-	private int numTargets = 4;
+	private int numTargets = 3;
 	private int cannonBallRadius = 30;
-	private int cannonPower = 60;
+	private int cannonPower = 80;
 	private double gravity = 2.8;
 	Point startDrag = new Point(0,0);
 	Point endDrag = new Point(0,0);
+	private boolean gameStart = false;
 
 	public CannonAnimator()
 	{
@@ -50,28 +51,35 @@ public class CannonAnimator implements Animator {
 	 * @param g the graphics object on which to draw
 	 */
 	public void tick(Canvas g) {
-		//draw all of the objects on the canvas
-		myFireButton.drawMe(g);
-		myCannon.drawMe(g);
-		for (Cannonball b: activeCannonballs)
+		if(gameStart == false)
 		{
-			b.drawMe(g);
+			startScreen(g);
 		}
-		for (Targets t:targets)
-		{
-			t.drawMe(g);
-		}
-		//check if any of the targets are hit or cannonball hit ground
-		checkIfHit(g);
+		else {
+			//draw all of the objects on the canvas
+			myFireButton.drawMe(g);
+			myCannon.drawMe(g);
+			for (Cannonball b : activeCannonballs) {
+				b.drawMe(g);
+			}
+			for (Targets t : targets) {
+				t.drawMe(g);
+			}
+			//check if any of the targets are hit or cannonball hit ground
+			checkIfHit(g);
 
-		//update the cannonball positions
-		for (Cannonball b:activeCannonballs)
-		{
-			b.updatePosition();
-		}
-		for (Targets t: targets)
-		{
-			t.moveTargets();
+			//update the cannonball positions
+			for (Cannonball b : activeCannonballs) {
+				b.updatePosition();
+			}
+			for (Targets t : targets) {
+				t.moveTargets();
+			}
+			if(targets.isEmpty()) //make new targets if there are none left
+			{
+				numTargets++;
+				constructTargets();
+			}
 		}
 	}
 
@@ -90,6 +98,10 @@ public class CannonAnimator implements Animator {
      */
 	public void onTouch(MotionEvent event)
 	{
+		if(gameStart == false)
+		{
+			gameStart = true;
+		}
 		int xPos = (int)event.getX();
 		int yPos = (int)event.getY();
 		double angle;
@@ -151,9 +163,9 @@ public class CannonAnimator implements Animator {
 		ArrayList<Targets> removeTargets = new ArrayList<>();
 		for (Cannonball b: activeCannonballs)
 		{
-			if((b.getyCoor()+b.getRadius()) >= myCannon.getGroundHeight()) //check if hits ground
+			if((b.getPredictedY()+b.getRadius()) >= myCannon.getGroundHeight()) //check if goint to hit ground
 			{
-				b.rolling();
+				b.rolling(myCannon);
 			}
 			if ((b.getxCoor() + b.getRadius()) >= 2000) //check if goes off screen
 			{
@@ -164,7 +176,7 @@ public class CannonAnimator implements Animator {
 					if (b.hitTarget(t)) {
 						Paint textPaint = new Paint();
 						textPaint.setColor(Color.WHITE);
-						textPaint.setTextSize(50);
+						textPaint.setTextSize(60);
 						canvas.drawText("HIT!", t.xTopLeft, t.yTopLeft, textPaint);
 						removeTargets.add(t);
 						removeBalls.add(b);
@@ -200,4 +212,25 @@ public class CannonAnimator implements Animator {
 		}
 		return theta;
 	}//calculateAngle
+
+	/**
+	 * creates a "start screen" that gives directions
+	 * @param canvas
+     */
+	public void startScreen(Canvas canvas)
+	{
+		int centerScreenX = canvas.getWidth()/2;
+		int centerScreenY = canvas.getHeight()/2;
+		Paint startPaint = new Paint();
+		startPaint.setColor(Color.WHITE);
+		startPaint.setTextSize(200);
+		canvas.drawText("Cannon Game", centerScreenX - 610, centerScreenY - 200, startPaint);
+		startPaint.setTextSize(60);
+		canvas.drawText("drag finger up and down to aim cannon", centerScreenX - 480,
+				centerScreenY - 100, startPaint);
+		canvas.drawText("hit targets before they get to the castle",
+				centerScreenX - 480, centerScreenY - 50, startPaint);
+		startPaint.setColor(Color.RED);
+		canvas.drawText("TAP SCREEN TO BEGIN", centerScreenX - 250, centerScreenY +50, startPaint);
+	}
 }//class TextAnimator

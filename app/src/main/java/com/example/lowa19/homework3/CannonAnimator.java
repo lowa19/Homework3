@@ -30,6 +30,13 @@ public class CannonAnimator implements Animator {
 	Point endDrag = new Point(0,0);
 	private boolean gameStart = false;
 
+	//private PlayerTwoCannon player2Cannon;
+	//private ArrayList<Cannonball> player2Cannonballs;
+	//private int playerOneScore = 0;
+	//private int playerTwoScore = 0;
+	//Point startDragPlayerTwo = new Point(0,0);
+	//Point endDragPlayerTwo = new Point(0,0);
+
 	public CannonAnimator()
 	{
 		myCannon = new Cannon(cannonPower);
@@ -58,10 +65,18 @@ public class CannonAnimator implements Animator {
 		else {
 			//draw all of the objects on the canvas
 			myFireButton.drawMe(g);
+			//playerTwoFireButton.drawMe(g);
 			myCannon.drawMe(g);
+			//playerTwoCannon.drawMe(g);
 			for (Cannonball b : activeCannonballs) {
 				b.drawMe(g);
 			}
+			/*
+			for (Cannonball b: playerTwoCannonballs)
+			{
+				b.drawMe(g);
+			}
+			 */
 			for (Targets t : targets) {
 				t.drawMe(g);
 			}
@@ -72,6 +87,12 @@ public class CannonAnimator implements Animator {
 			for (Cannonball b : activeCannonballs) {
 				b.updatePosition();
 			}
+			/*
+			for(Cannonball b : playerTwoCannonballs)
+			{
+				b.updatePosition();
+			}
+			 */
 			for (Targets t : targets) {
 				t.moveTargets();
 			}
@@ -80,6 +101,8 @@ public class CannonAnimator implements Animator {
 				numTargets++;
 				constructTargets();
 			}
+			// checkIfWin(g);
+
 		}
 	}
 
@@ -186,6 +209,9 @@ public class CannonAnimator implements Animator {
 		}
 		activeCannonballs.removeAll(removeBalls);
 		targets.removeAll(removeTargets);
+		/*
+		copy code above but with the playerTwoCannonballs
+		 */
 	}//checkIfHit
 
 	/**
@@ -228,9 +254,23 @@ public class CannonAnimator implements Animator {
 		startPaint.setTextSize(60);
 		canvas.drawText("drag finger up and down to aim cannon", centerScreenX - 480,
 				centerScreenY - 100, startPaint);
-		canvas.drawText("hit targets before they get to the castle",
+		canvas.drawText("first player to hit 30 targets wins",
 				centerScreenX - 480, centerScreenY - 50, startPaint);
 		startPaint.setColor(Color.RED);
 		canvas.drawText("TAP SCREEN TO BEGIN", centerScreenX - 250, centerScreenY +50, startPaint);
 	}
+
+	/*
+	public void checkIfWin(Canvas canvas)
+	{
+	if(playerOneScore >= 30 && playerTwoScore < 30)
+			{
+				drawText "Game Over Player One Wins"
+			}
+			else if (playerTwoScore >= 30 && playerOneScore < 30)
+			{
+				g.drawText("Game Over Player Two Wins")
+			}
+	}
+	 */
 }//class TextAnimator

@@ -22,6 +22,7 @@ public class MainActivity extends Activity{
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		//setRequestedOrientation();
 
 		// Create an animation canvas and place it in the main layout
 		Animator cannonAnim = new CannonAnimator();

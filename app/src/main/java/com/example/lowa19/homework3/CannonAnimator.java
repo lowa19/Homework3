@@ -25,7 +25,7 @@ public class CannonAnimator implements Animator {
 	private int numTargets = 3;
 	private int cannonBallRadius = 30;
 	private int cannonPower = 80;
-	private double gravity = 2.8;
+	private double gravity = 2.0;
 	Point startDrag = new Point(0,0);
 	Point endDrag = new Point(0,0);
 	private boolean gameStart = false;
@@ -36,6 +36,8 @@ public class CannonAnimator implements Animator {
 	//private int playerTwoScore = 0;
 	//Point startDragPlayerTwo = new Point(0,0);
 	//Point endDragPlayerTwo = new Point(0,0);
+	//private int playerOneFireCooldown = 0;
+	//private int playerTwoFireCooldown = 0;
 
 	public CannonAnimator()
 	{

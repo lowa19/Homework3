@@ -17,7 +17,7 @@ public class FireButtonRect
 
     public FireButtonRect()
     {
-        fireButton = new Rect(50, 50, 150, 150);
+        fireButton = new Rect(50, 50, 200, 200);
         buttonPaint = new Paint();
         buttonPaint.setColor(Color.MAGENTA);
         buttonPaint.setStyle(Paint.Style.FILL);
@@ -29,7 +29,7 @@ public class FireButtonRect
     public void drawMe(Canvas canvas)
     {
         canvas.drawRect(fireButton, buttonPaint);
-        canvas.drawText("FIRE!", 80, 100, textPaint);
+        canvas.drawText("FIRE!", 115, 125, textPaint);
     }
 
     /**
@@ -37,10 +37,11 @@ public class FireButtonRect
      * @param x x-pos of touch
      * @param y y-pos of touch
      * @return true if touch was inside 'button'
+     * 20 pixel leway
      */
     public boolean fireClick(int x, int y)
     {
-        if(x>=50 && x<=150 && y>=50 && y<=150)
+        if(x>=30 && x<=220 && y>=30 && y<=220)
         {
             return true;
         }

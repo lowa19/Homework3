@@ -24,7 +24,7 @@ public class Cannon
     private double cannonAngle; //in radians
     double maxAngle;
     double minAngle;
-    private int estimatedScreenWidth = 2000;
+    private int estimatedScreenWidth = 1800;
     private int wheelRadius = 50;
     private int x = 100;
     private int y = 1200; //for smoother view set to 1200
@@ -63,14 +63,14 @@ public class Cannon
             topRightAngle = (Math.PI/2);
             bottomLeftAngle = 0;
             initTopLeftSpecs();
-            topRight = new Point(estimatedScreenWidth - x, y);
+            topRight = new Point(estimatedScreenWidth - x, y - height);
             topLeft = new Point(estimatedScreenWidth - x - width, y - height);
             bottomLeft = new Point(estimatedScreenWidth - x - width, y);
             bottomRight = new Point(estimatedScreenWidth - x, y);
             wheelOrigin = new Point(estimatedScreenWidth - x, y);
             minAngle = Math.PI/2;
             maxAngle = Math.PI;
-            cannonAngle = Math.PI;
+            cannonAngle = 3*(Math.PI/4);
         }
 
     }
@@ -101,23 +101,23 @@ public class Cannon
      */
     public void shiftCannon(double angle)
     {
-        double resultingAngle = cannonAngle + angle;
+        double resultingAngle = this.cannonAngle + angle;
 
         if(resultingAngle <= this.maxAngle && resultingAngle >= this.minAngle) //limitations
         {
-            cannonAngle = resultingAngle; //change the saved value for angle
+            this.cannonAngle = resultingAngle; //change the saved value for angle
             if (this.playerID == 1)
             {
-                topLeftAngle = topLeftAngle + angle;
-                topRightAngle = topRightAngle + angle;
-                bottomRightAngle = bottomRightAngle + angle;
+                this.topLeftAngle = this.topLeftAngle + angle;
+                this.topRightAngle = this.topRightAngle + angle;
+                this.bottomRightAngle = this.bottomRightAngle + angle;
                 changePoints();
             }
             else //playerTwoCannon
             {
-                topRightAngle = topRightAngle + angle;
-                topLeftAngle = topLeftAngle + angle;
-                bottomLeftAngle = bottomLeftAngle + angle;
+                this.topRightAngle = this.topRightAngle + angle;
+                this.topLeftAngle = this.topLeftAngle + angle;
+                this.bottomLeftAngle = this.bottomLeftAngle + angle;
             }
         }
     }
@@ -131,12 +131,12 @@ public class Cannon
         int midX;
         if(this.playerID == 1)
         {
-             midX = (topRight.x + bottomRight.x) / 2;
+             midX = (this.topRight.x + this.bottomRight.x) / 2;
             return midX;
         }
         else //playerTwoCannon
         {
-            midX = (topLeft.x + bottomLeft.x) / 2;
+            midX = (this.topLeft.x + this.bottomLeft.x) / 2;
             return midX;
         }
     }
@@ -150,12 +150,12 @@ public class Cannon
         int midY;
         if(this.playerID == 1)
         {
-            midY = (topRight.y + bottomRight.y) / 2;
+            midY = (this.topRight.y + this.bottomRight.y) / 2;
             return midY;
         }
         else //playerTwoCannon
         {
-            midY = (topLeft.x + bottomLeft.x) / 2;
+            midY = (this.topLeft.x + this.bottomLeft.x) / 2;
             return midY;
         }
     }
@@ -197,7 +197,7 @@ public class Cannon
      */
     public double getPowerY()
     {
-        double forceY = -(power*Math.sin(cannonAngle));
+        double forceY = -(power*Math.sin(this.cannonAngle));
         return forceY;
     }
 

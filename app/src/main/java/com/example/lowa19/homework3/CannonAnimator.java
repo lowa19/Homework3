@@ -26,6 +26,9 @@ public class CannonAnimator implements Animator {
 	private boolean gameStart = false;
 	private int endGameCooldown;
 	private int winner;
+	private int cannonCoolDownTime = 8;
+	private boolean titleUp = false;
+	private int winningScore = 30;
 	//human player variables
 	private Cannon playerOneCannon;
 	private FireButtonRect myFireButton;
@@ -42,8 +45,6 @@ public class CannonAnimator implements Animator {
 
 	public CannonAnimator()
 	{
-		targets = new ArrayList<>();
-		constructTargets();
 		//human player
 		playerOneCannon = new Cannon(cannonPower, 1);
 		myFireButton = new FireButtonRect();
@@ -51,6 +52,9 @@ public class CannonAnimator implements Animator {
 		//computer player
 		playerTwoCannon = new Cannon( cannonPower, 2);
 		playerTwoCannonballs = new ArrayList<>();
+
+		targets = new ArrayList<>();
+		constructTargets();
 	}//ctor
 
 	public int interval() {
@@ -81,7 +85,7 @@ public class CannonAnimator implements Animator {
 			//check if any of the targets are hit or cannonball hit ground
 			checkIfHit(g);
 			//update the cannonball and target positions
-			updatePositions(g);
+			updatePositions();
 			//make new targets if there are none left
 			if(targets.isEmpty())
 			{
@@ -126,7 +130,7 @@ public class CannonAnimator implements Animator {
 		if(myFireButton.fireClick(xPos,yPos) && playerOneFireCooldown == 0)
 		{
 			shootCannon(playerOneCannon);
-			playerOneFireCooldown = 5;
+			playerOneFireCooldown = cannonCoolDownTime;
 		}
 		else if (event.getAction() == MotionEvent.ACTION_DOWN)
 		{
@@ -145,7 +149,7 @@ public class CannonAnimator implements Animator {
 	/**
 	 * creates cannonballs starting at tip of cannon
 	 */
-	public void shootCannon(Cannon c)
+	private void shootCannon(Cannon c)
 	{
 		 Cannonball myCannonBall = new Cannonball(cannonBallRadius, c.getCannonMuzzleX(),
 				c.getCannonMuzzleY(), c.getPowerX(), c.getPowerY(), gravity);
@@ -163,7 +167,7 @@ public class CannonAnimator implements Animator {
 	 * creates targets at random locations between the two cannons and adds to arraylist
 	 * each target is a 80x80 square
 	 */
-	public void constructTargets()
+	private void constructTargets()
 	{
 		int minPosX = playerOneCannon.getRotationAxisX() + playerOneCannon.getWidth();
 		int maxPosX = playerTwoCannon.getRotationAxisX() - playerTwoCannon.getWidth();
@@ -186,9 +190,10 @@ public class CannonAnimator implements Animator {
 	 * if the cannonball hits a target, they both get removed
 	 * sends a HIT  message to the GUI
 	 */
-	public void checkIfHit(Canvas canvas)
+	private void checkIfHit(Canvas canvas)
 	{
-		ArrayList<Cannonball> removeBalls = new ArrayList<>();
+		ArrayList<Cannonball> removeBallsOne = new ArrayList<>();
+		ArrayList<Cannonball> removeBallsTwo = new ArrayList<>();
 		ArrayList<Targets> removeTargets = new ArrayList<>();
 		for (Cannonball b: playerOneCannonballs)
 		{
@@ -198,7 +203,7 @@ public class CannonAnimator implements Animator {
 			}
 			if ((b.getxCoor() + b.getRadius()) >= 2000) //check if goes off screen
 			{
-				removeBalls.add(b);
+				removeBallsOne.add(b);
 			}
 			else {
 				for (Targets t : targets) {
@@ -208,12 +213,38 @@ public class CannonAnimator implements Animator {
 						textPaint.setTextSize(60);
 						canvas.drawText("HIT!", t.xTopLeft, t.yTopLeft, textPaint);
 						removeTargets.add(t);
-						removeBalls.add(b);
+						removeBallsOne.add(b);
+						playerOneScore++;
 					}
 				}
 			}
 		}
-		playerOneCannonballs.removeAll(removeBalls);
+		for (Cannonball b: playerTwoCannonballs)
+		{
+			if((b.getPredictedY()+b.getRadius()) >= playerTwoCannon.getGroundHeight()) //check if goint to hit ground
+			{
+				b.rolling(playerTwoCannon);
+			}
+			if (b.getxCoor() < 0 )//check if goes off screen
+			{
+				removeBallsTwo.add(b);
+			}
+			else {
+				for (Targets t : targets) {
+					if (b.hitTarget(t)) {
+						Paint textPaint = new Paint();
+						textPaint.setColor(Color.WHITE);
+						textPaint.setTextSize(60);
+						canvas.drawText("HIT!", t.xTopLeft, t.yTopLeft, textPaint);
+						removeTargets.add(t);
+						removeBallsTwo.add(b);
+						playerTwoScore++;
+					}
+				}
+			}
+		}
+		playerOneCannonballs.removeAll(removeBallsOne);
+		playerTwoCannonballs.removeAll(removeBallsTwo);
 		targets.removeAll(removeTargets);
 		/*
 		copy code above but with the playerTwoCannonballs
@@ -227,7 +258,7 @@ public class CannonAnimator implements Animator {
 	 * @param end
      * @return angle in radians
      */
-	public double calculateAngle(Point start, Point end)
+	private double calculateAngle(Point start, Point end)
 	{
 		double theta;
 		double alphaX = start.x - playerOneCannon.getRotationAxisX();
@@ -249,14 +280,25 @@ public class CannonAnimator implements Animator {
 	 * creates a "start screen" that gives directions
 	 * @param canvas
      */
-	public void startScreen(Canvas canvas)
+	private void startScreen(Canvas canvas)
 	{
 		int centerScreenX = canvas.getWidth()/2;
 		int centerScreenY = canvas.getHeight()/2;
 		Paint startPaint = new Paint();
 		startPaint.setColor(Color.WHITE);
 		startPaint.setTextSize(200);
-		canvas.drawText("Cannon Game", centerScreenX - 610, centerScreenY - 200, startPaint);
+		if(titleUp)
+		{
+			canvas.drawText("Cannon Game", centerScreenX - 610, centerScreenY - 210, startPaint);
+			startPaint.setTextSize(60);
+			titleUp = false;
+		}
+		else
+		{
+			canvas.drawText("Cannon Game", centerScreenX - 610, centerScreenY - 200, startPaint);
+			titleUp = true;
+		}
+
 		startPaint.setTextSize(60);
 		canvas.drawText("drag finger up and down to aim cannon", centerScreenX - 480,
 				centerScreenY - 100, startPaint);
@@ -266,42 +308,43 @@ public class CannonAnimator implements Animator {
 		canvas.drawText("TAP SCREEN TO BEGIN", centerScreenX - 250, centerScreenY +50, startPaint);
 	}
 
-	public void checkIfWin()
+	private void checkIfWin()
 	{
-		if(playerOneScore >= 30 && playerTwoScore < 30)
+		if(playerOneScore >= winningScore && playerTwoScore < winningScore)
 			{
-				endGameCooldown = 25;
+				endGameCooldown = 250;
 				gameStart = false;
 				winner = 1;
-
+				resetScores();
 			}
-			else if (playerTwoScore >= 30 && playerOneScore < 30)
+			else if (playerTwoScore >= winningScore && playerOneScore < winningScore)
 			{
-				endGameCooldown = 25;
+				endGameCooldown = 250;
 				gameStart = false;
 				winner = 2;
+				resetScores();
 			}
 	}
 
-	public void endScreen(int winnerID, Canvas canvas)
+	private void endScreen(int winnerID, Canvas canvas)
 	{
 		int centerScreenX = canvas.getWidth()/2;
 		int centerScreenY = canvas.getHeight()/2;
 		Paint endPaint = new Paint();
 		endPaint.setColor(Color.RED);
-		endPaint.setTextSize(200);
+		endPaint.setTextSize(140);
 
 		if(winnerID == 1)
 		{
-			canvas.drawText( "Game Over Player One Wins", centerScreenX - 700, centerScreenY, endPaint);
+			canvas.drawText( "Game Over Player One Wins", centerScreenX - 900, centerScreenY, endPaint);
 		}
 		else
 		{
-			canvas.drawText( "Game Over Player Two Wins", centerScreenX - 700, centerScreenY, endPaint);
+			canvas.drawText( "Game Over Player Two Wins", centerScreenX - 900, centerScreenY, endPaint);
 		}
 	}
 
-	public void drawAllObjects(Canvas g)
+	private void drawAllObjects(Canvas g)
 	{
 		myFireButton.drawMe(g);
 		playerOneCannon.drawMe(g);
@@ -319,9 +362,15 @@ public class CannonAnimator implements Animator {
 		for (Targets t : targets) {
 			t.drawMe(g);
 		}
+
+		Paint scorePaint = new Paint();
+		scorePaint.setColor(Color.WHITE);
+		scorePaint.setTextSize(50);
+		g.drawText("Player 1:"+playerOneScore, 50, 250, scorePaint);
+		g.drawText("Player 2:"+playerTwoScore, 1500, 250, scorePaint);
 	}
 
-	public void updatePositions(Canvas g)
+	private void updatePositions()
 	{
 		for (Cannonball b : playerOneCannonballs) {
 			b.updatePosition();
@@ -337,21 +386,45 @@ public class CannonAnimator implements Animator {
 
 	private void computerActions()
 	{
-		double angleDirection = Math.random();
-		double randomAngle = (Math.PI/2)*Math.random();
-		if(playerTwoFireCooldown == 0)
+		boolean makeAction = artificialWaitTime();
+		if (makeAction)
 		{
-			if(angleDirection>.5)
+			double angleDirection = Math.random();
+			double randomAngle = (Math.PI/2)*Math.random();
+			if(playerTwoFireCooldown == 0)
 			{
-				randomAngle = -randomAngle;
+				if(angleDirection>.5)
+				{
+					randomAngle = -randomAngle;
+				}
+				playerTwoCannon.shiftCannon(randomAngle + (Math.PI/2)); //add 90 for quadrant II
+				shootCannon(playerTwoCannon);
+				playerTwoFireCooldown = cannonCoolDownTime;
 			}
-			playerTwoCannon.shiftCannon(randomAngle + (Math.PI/2)); //add 90 for quadrant II
-			shootCannon(playerTwoCannon);
-			playerTwoFireCooldown = 5;
+			else
+			{
+				playerTwoFireCooldown--;
+			}
+		}
+	}
+
+	private void resetScores()
+	{
+		playerOneScore = 0;
+		playerTwoScore = 0;
+		numTargets = 3;
+	}
+
+	private boolean artificialWaitTime()
+	{
+		double decision = Math.random();
+		if(decision > .3)
+		{
+			return true;
 		}
 		else
 		{
-			playerTwoFireCooldown--;
+			return false;
 		}
 	}
 }//class TextAnimator

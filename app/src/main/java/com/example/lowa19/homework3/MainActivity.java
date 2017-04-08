@@ -1,5 +1,6 @@
 package com.example.lowa19.homework3;
 
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.app.Activity;
 import android.widget.LinearLayout;
@@ -22,7 +23,7 @@ public class MainActivity extends Activity{
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		//setRequestedOrientation();
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE); //locks horizontal
 
 		// Create an animation canvas and place it in the main layout
 		Animator cannonAnim = new CannonAnimator();

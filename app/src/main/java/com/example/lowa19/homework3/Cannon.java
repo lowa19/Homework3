@@ -19,36 +19,54 @@ import android.graphics.drawable.Drawable;
 public class Cannon
 {
     private Paint cannonPaint, wheelPaint;
-    private Point topLeft, topRight, bottomLeft, bottomRight;
+    private Point topLeft, topRight, bottomLeft, bottomRight, wheelOrigin;
     private Path cannonBody;
     private double cannonAngle = 0; //in radians
     double maxAngle = (Math.PI/2);
     double minAngle = 0;
+    private int estimatedScreenWidth = 2000;
     private int wheelRadius = 50;
     private int x = 100;
     private int y = 1200; //for smoother view set to 1200
-    private int power;
+    private int power, playerID;
     private int height = 100;
     private int width = 300;
-    private double topLeftAngle, topRightAngle, bottomRightAngle;
-    private double topRightDistance;
+    private double topLeftAngle, topRightAngle, bottomRightAngle, bottomLeftAngle;
+    private double topRightDistance, topLeftDistance;
 
-    public Cannon(int initPower)
+    public Cannon(int initPower, int initPlayerID)
     {
+        playerID = initPlayerID;
+        power = initPower;
         cannonPaint = new Paint();
         cannonPaint.setColor(Color.GRAY);
         cannonPaint.setStyle(Paint.Style.FILL);
         wheelPaint = new Paint();
         wheelPaint.setColor(Color.YELLOW);
         wheelPaint.setStyle(Paint.Style.FILL);
-        topLeftAngle = (Math.PI/2);
-        bottomRightAngle = 0;
-        initTopRightSpecs();
-        topLeft = new Point(x, y - height);
-        topRight = new Point(x + width, y - height);
-        bottomLeft = new Point(x, y);
-        bottomRight = new Point (x + width, y);
-        power = initPower;
+        if(playerID == 1)
+        {
+            topLeftAngle = (Math.PI / 2);
+            bottomRightAngle = 0;
+            initTopRightSpecs();
+            topLeft = new Point(x, y - height);
+            topRight = new Point(x + width, y - height);
+            bottomLeft = new Point(x, y);
+            bottomRight = new Point(x + width, y);
+            wheelOrigin = new Point(x,y);
+        }
+        else //playerTwoCannon
+        {
+            topRightAngle = (Math.PI/2);
+            bottomLeftAngle = 0;
+            initTopLeftSpecs();
+            topRight = new Point(estimatedScreenWidth - x, y);
+            topLeft = new Point(estimatedScreenWidth - x - width, y - height);
+            bottomLeft = new Point(estimatedScreenWidth - x - width, y);
+            bottomRight = new Point(estimatedScreenWidth - x, y);
+            wheelOrigin = new Point(estimatedScreenWidth - x, y);
+        }
+
     }
 
     public void drawMe(Canvas canvas)
@@ -62,7 +80,7 @@ public class Cannon
         cannonBody.lineTo(bottomLeft.x, bottomLeft.y);
         cannonBody.close();
         canvas.drawPath(cannonBody, cannonPaint);
-        canvas.drawCircle(x,y, wheelRadius, wheelPaint);
+        canvas.drawCircle(wheelOrigin.x, wheelOrigin.y, wheelRadius, wheelPaint);
         //draw 'ground'
         Paint grass = new Paint();
         grass.setColor(Color.GREEN);
@@ -82,10 +100,19 @@ public class Cannon
         if(resultingAngle <= maxAngle && resultingAngle >= minAngle) //limitations
         {
             cannonAngle = resultingAngle; //change the saved value for angle
-            topLeftAngle = topLeftAngle + angle;
-            topRightAngle = topRightAngle + angle;
-            bottomRightAngle = bottomRightAngle + angle;
-            changePoints();
+            if (this.playerID == 1)
+            {
+                topLeftAngle = topLeftAngle + angle;
+                topRightAngle = topRightAngle + angle;
+                bottomRightAngle = bottomRightAngle + angle;
+                changePoints();
+            }
+            else //playerTwoCannon
+            {
+                topRightAngle = topRightAngle + angle;
+                topLeftAngle = topLeftAngle + angle;
+                bottomLeftAngle = bottomLeftAngle + angle;
+            }
         }
     }
     /**
@@ -95,8 +122,17 @@ public class Cannon
      */
     public int getCannonMuzzleX()
     {
-        int midX = (topRight.x + bottomRight.x)/2;
-        return midX;
+        int midX;
+        if(this.playerID == 1)
+        {
+             midX = (topRight.x + bottomRight.x) / 2;
+            return midX;
+        }
+        else //playerTwoCannon
+        {
+            midX = (topLeft.x + bottomLeft.x) / 2;
+            return midX;
+        }
     }
     /**
      * Used to set initial position of the cannonball
@@ -105,18 +141,27 @@ public class Cannon
      */
     public int getCannonMuzzleY()
     {
-        int midY = (topRight.y + bottomRight.y)/2;
-        return midY;
+        int midY;
+        if(this.playerID == 1)
+        {
+            midY = (topRight.y + bottomRight.y) / 2;
+            return midY;
+        }
+        else //playerTwoCannon
+        {
+            midY = (topLeft.x + bottomLeft.x) / 2;
+            return midY;
+        }
     }
 
     public int getRotationAxisX()
     {
-        return this.x;
+        return this.wheelOrigin.x;
     }
 
     public int getRotationAxisY()
     {
-        return this.y;
+        return this.wheelOrigin.y;
     }
 
     /**
@@ -126,8 +171,17 @@ public class Cannon
      */
     public double getPowerX()
     {
-        double forceX = power*Math.cos(cannonAngle);
-        return forceX;
+        double forceX;
+        if(this.playerID == 1)
+        {
+            forceX = power * Math.cos(cannonAngle);
+            return forceX;
+        }
+        else //for playerTwoCannon
+        {
+            forceX = power * Math.cos(cannonAngle);
+            return forceX;
+        }
     }
 
     /**
@@ -139,6 +193,11 @@ public class Cannon
     {
         double forceY = -(power*Math.sin(cannonAngle));
         return forceY;
+    }
+
+    public int getWidth()
+    {
+        return this.width;
     }
 
     public int getGroundHeight()
@@ -159,18 +218,38 @@ public class Cannon
         this.topRightDistance = Math.sqrt((height*height) + (width*width));
     }
 
+    public void initTopLeftSpecs() //for playerTwoCannon
+    {
+        double dHeight = height;
+        double dWidth = width;
+        this.topLeftAngle = Math.atan(dHeight/dWidth);
+        this.topLeftDistance = Math.sqrt((height*height) + (width*width));
+    }
+
     /**
      * changes the points using parametric
      * coordinates of a circle around translated origin
      */
     public void changePoints()
     {
-        topLeft.x = x + (int)(height*Math.cos(topLeftAngle));
-        topLeft.y = y - (int)(height*Math.sin(topLeftAngle));
-        topRight.x = x + (int)(topRightDistance*Math.cos(topRightAngle));
-        topRight.y = y - (int)(topRightDistance*Math.sin(topRightAngle));
-        bottomRight.x = x + (int)(width *Math.cos(bottomRightAngle));
-        bottomRight.y = y - (int)(width*Math.sin(bottomRightAngle));
-    }
+        if (this.playerID == 1)
+        {
+            this.topLeft.x = x + (int) (height * Math.cos(topLeftAngle));
+            this.topLeft.y = y - (int) (height * Math.sin(topLeftAngle));
+            this.topRight.x = x + (int) (topRightDistance * Math.cos(topRightAngle));
+            this.topRight.y = y - (int) (topRightDistance * Math.sin(topRightAngle));
+            this.bottomRight.x = x + (int) (width * Math.cos(bottomRightAngle));
+            this.bottomRight.y = y - (int) (width * Math.sin(bottomRightAngle));
+        }
+        else //playerTwoCannon
+        {
+            this.topRight.x = this.wheelOrigin.x + (int)(height * Math.cos(-topRightAngle));
+            this.topRight.y = this.wheelOrigin.y - (int)(height * Math.sin(-topRightAngle));
+            this.topLeft.x = this.wheelOrigin.x + (int)(topLeftDistance + Math.cos(-topLeftAngle));
+            this.topLeft.y = this.wheelOrigin.y - (int)(topLeftDistance + Math.sin(-topLeftAngle));
+            this.bottomLeft.x = this.wheelOrigin.x + (int)(width * Math.cos(-bottomLeftAngle));
+            this.bottomLeft.y = this.wheelOrigin.y - (int)(width * Math.sin(bottomLeftAngle));
+        }
+    }//changePoints
 
 }

@@ -18,7 +18,7 @@ import java.util.ArrayList;
  */
 public class CannonAnimator implements Animator {
 
-	private Cannon myCannon;
+	private Cannon playerOneCannon;
 	private FireButtonRect myFireButton;
 	private ArrayList<Cannonball> activeCannonballs;
 	private ArrayList<Targets> targets;
@@ -30,7 +30,7 @@ public class CannonAnimator implements Animator {
 	Point endDrag = new Point(0,0);
 	private boolean gameStart = false;
 
-	//private PlayerTwoCannon player2Cannon;
+	private Cannon playerTwoCannon;
 	//private ArrayList<Cannonball> player2Cannonballs;
 	//private int playerOneScore = 0;
 	//private int playerTwoScore = 0;
@@ -41,7 +41,8 @@ public class CannonAnimator implements Animator {
 
 	public CannonAnimator()
 	{
-		myCannon = new Cannon(cannonPower);
+		playerOneCannon = new Cannon(cannonPower, 1);
+		playerTwoCannon = new Cannon( cannonPower, 2);
 		myFireButton = new FireButtonRect();
 		targets = new ArrayList<>();
 		constructTargets();
@@ -68,8 +69,8 @@ public class CannonAnimator implements Animator {
 			//draw all of the objects on the canvas
 			myFireButton.drawMe(g);
 			//playerTwoFireButton.drawMe(g);
-			myCannon.drawMe(g);
-			//playerTwoCannon.drawMe(g);
+			playerOneCannon.drawMe(g);
+			playerTwoCannon.drawMe(g);
 			for (Cannonball b : activeCannonballs) {
 				b.drawMe(g);
 			}
@@ -132,7 +133,7 @@ public class CannonAnimator implements Animator {
 		double angle;
 		if(myFireButton.fireClick(xPos,yPos))
 		{
-			shootCannon();
+			shootCannon(playerOneCannon);
 		}
 		else if (event.getAction() == MotionEvent.ACTION_DOWN)
 		{
@@ -144,35 +145,38 @@ public class CannonAnimator implements Animator {
 			endDrag.x = xPos;
 			endDrag.y = yPos;
 			angle = calculateAngle(startDrag, endDrag);
-			myCannon.shiftCannon(angle);
+			playerOneCannon.shiftCannon(angle);
 		}
 	}//onTouch
 
 	/**
 	 * creates cannonballs starting at tip of cannon
 	 */
-	public void shootCannon()
+	public void shootCannon(Cannon c)
 	{
-		 Cannonball myCannonBall = new Cannonball(cannonBallRadius, myCannon.getCannonMuzzleX(),
-				myCannon.getCannonMuzzleY(), myCannon.getPowerX(), myCannon.getPowerY(), gravity);
+		 Cannonball myCannonBall = new Cannonball(cannonBallRadius, c.getCannonMuzzleX(),
+				c.getCannonMuzzleY(), c.getPowerX(), c.getPowerY(), gravity);
 		activeCannonballs.add(myCannonBall);
 	}//shootCannon
 
 	/**
-	 * creates targets at random locations and adds to arraylist
+	 * creates targets at random locations between the two cannons and adds to arraylist
+	 * each target is a 80x80 square
 	 */
 	public void constructTargets()
 	{
+		int minPosX = playerOneCannon.getRotationAxisX() + playerOneCannon.getWidth();
+		int maxPosX = playerTwoCannon.getRotationAxisX() - playerTwoCannon.getWidth();
 		for(int i = 0; i < numTargets; i++)
 		{
-			int randomX = (int)((1700 - myCannon.getCannonMuzzleX())*Math.random());
-			int randomY = (int)(myCannon.getGroundHeight()*Math.random());
-			if(randomY == myCannon.getGroundHeight())
+			int randomX = (int)((maxPosX - minPosX)*Math.random());
+			int randomY = (int)(playerOneCannon.getGroundHeight()*Math.random());
+			if(randomY == playerOneCannon.getGroundHeight())
 			{
 				randomY = randomY -100;
 			}
-			Targets temp = new Targets(myCannon.getCannonMuzzleX() + randomX, randomY,
-					myCannon.getCannonMuzzleX() + 100 + randomX, 100 + randomY);
+			Targets temp = new Targets(minPosX + randomX, randomY,
+					minPosX + 80 + randomX, 80 + randomY);
 			targets.add(temp);
 		}
 	}//constructTargets

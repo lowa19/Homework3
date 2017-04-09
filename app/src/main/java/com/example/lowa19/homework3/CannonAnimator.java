@@ -316,14 +316,14 @@ public class CannonAnimator implements Animator {
 	{
 		if(playerOneScore >= winningScore && playerTwoScore < winningScore)
 			{
-				endGameCooldown = 200;
+				endGameCooldown = 250;
 				gameStart = false;
 				winner = 1;
 				resetGame();
 			}
 			else if (playerTwoScore >= winningScore && playerOneScore < winningScore)
 			{
-				endGameCooldown = 200;
+				endGameCooldown = 250;
 				gameStart = false;
 				winner = 2;
 				resetGame();
@@ -443,7 +443,7 @@ public class CannonAnimator implements Animator {
 	private boolean artificialWaitTime()
 	{
 		double decision = Math.random();
-		if(decision > .3)
+		if(decision > .4)
 		{
 			return true;
 		}

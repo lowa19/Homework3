@@ -136,7 +136,7 @@ public class Cannon
         }
         else //playerTwoCannon
         {
-            midY = (this.topLeft.x + this.bottomLeft.x) / 2;
+            midY = (this.topLeft.y + this.bottomLeft.y) / 2;
             return midY;
         }
     }
@@ -236,7 +236,7 @@ public class Cannon
         wheelOrigin = new Point(estimatedScreenWidth - x, y);
         minAngle = Math.PI/2;
         maxAngle = Math.PI;
-        cannonAngle = 3*(Math.PI/4);
+        cannonAngle = Math.PI;
     }
 
     /**

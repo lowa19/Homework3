@@ -46,31 +46,11 @@ public class Cannon
         wheelPaint.setStyle(Paint.Style.FILL);
         if(playerID == 1)
         {
-            topLeftAngle = (Math.PI / 2);
-            bottomRightAngle = 0;
-            initTopRightSpecs();
-            topLeft = new Point(x, y - height);
-            topRight = new Point(x + width, y - height);
-            bottomLeft = new Point(x, y);
-            bottomRight = new Point(x + width, y);
-            wheelOrigin = new Point(x,y);
-            minAngle = 0;
-            maxAngle = Math.PI/2;
-            cannonAngle = 0;
+            initPlayerOneCannon();
         }
         else //playerTwoCannon
         {
-            topRightAngle = (Math.PI/2);
-            bottomLeftAngle = 0;
-            initTopLeftSpecs();
-            topRight = new Point(estimatedScreenWidth - x, y - height);
-            topLeft = new Point(estimatedScreenWidth - x - width, y - height);
-            bottomLeft = new Point(estimatedScreenWidth - x - width, y);
-            bottomRight = new Point(estimatedScreenWidth - x, y);
-            wheelOrigin = new Point(estimatedScreenWidth - x, y);
-            minAngle = Math.PI/2;
-            maxAngle = Math.PI;
-            cannonAngle = 3*(Math.PI/4);
+            initPlayerTwoCannon();
         }
 
     }
@@ -118,6 +98,7 @@ public class Cannon
                 this.topRightAngle = this.topRightAngle + angle;
                 this.topLeftAngle = this.topLeftAngle + angle;
                 this.bottomLeftAngle = this.bottomLeftAngle + angle;
+                changePoints();
             }
         }
     }
@@ -217,24 +198,45 @@ public class Cannon
     }
 
     /**
-     * sets the angle of the top right point
-     * and finds the distance between that point and the
-     * axis of rotation
+     *  initialize the cannon's variables for the main player
      */
-    public void initTopRightSpecs()
+    public void initPlayerOneCannon()
     {
         double dHeight = height;
         double dWidth = width;
-        this.topRightAngle = Math.atan(dHeight/dWidth);
-        this.topRightDistance = Math.sqrt((height*height) + (width*width));
+        topRightAngle = Math.atan(dHeight/dWidth);
+        topRightDistance = Math.sqrt((height*height) + (width*width));
+        topLeftAngle = (Math.PI / 2);
+        bottomRightAngle = 0;
+        topLeft = new Point(x, y - height);
+        topRight = new Point(x + width, y - height);
+        bottomLeft = new Point(x, y);
+        bottomRight = new Point(x + width, y);
+        wheelOrigin = new Point(x,y);
+        minAngle = 0;
+        maxAngle = Math.PI/2;
+        cannonAngle = 0;
     }
 
-    public void initTopLeftSpecs() //for playerTwoCannon
+    /**
+     * initialize the cannon's variables for the computer
+     */
+    public void initPlayerTwoCannon()
     {
         double dHeight = height;
         double dWidth = -width;
-        this.topLeftAngle = Math.atan(dHeight/dWidth);
-        this.topLeftDistance = Math.sqrt((height*height) + (width*width));
+        topLeftAngle = Math.atan(dHeight/dWidth);
+        topLeftDistance = Math.sqrt((height*height) + (width*width));
+        topRightAngle = (Math.PI/2);
+        bottomLeftAngle = Math.PI;
+        topRight = new Point(estimatedScreenWidth - x, y - height);
+        topLeft = new Point(estimatedScreenWidth - x - width, y - height);
+        bottomLeft = new Point(estimatedScreenWidth - x - width, y);
+        bottomRight = new Point(estimatedScreenWidth - x, y);
+        wheelOrigin = new Point(estimatedScreenWidth - x, y);
+        minAngle = Math.PI/2;
+        maxAngle = Math.PI;
+        cannonAngle = 3*(Math.PI/4);
     }
 
     /**

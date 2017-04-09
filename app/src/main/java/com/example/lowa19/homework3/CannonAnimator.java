@@ -21,7 +21,7 @@ public class CannonAnimator implements Animator {
 	private ArrayList<Targets> targets;
 	private int numTargets = 3;
 	private int cannonBallRadius = 30;
-	private int cannonPower = 80;
+	private int cannonPower = 90;
 	private double gravity = 2.0;
 	private boolean gameStart = false;
 	private int endGameCooldown;
@@ -120,7 +120,7 @@ public class CannonAnimator implements Animator {
      */
 	public void onTouch(MotionEvent event)
 	{
-		if(gameStart == false)
+		if(gameStart == false && endGameCooldown == 0)
 		{
 			gameStart = true;
 		}
@@ -210,7 +210,7 @@ public class CannonAnimator implements Animator {
 					if (b.hitTarget(t)) {
 						Paint textPaint = new Paint();
 						textPaint.setColor(Color.WHITE);
-						textPaint.setTextSize(60);
+						textPaint.setTextSize(70);
 						canvas.drawText("HIT!", t.xTopLeft, t.yTopLeft, textPaint);
 						removeTargets.add(t);
 						removeBallsOne.add(b);
@@ -234,7 +234,7 @@ public class CannonAnimator implements Animator {
 					if (b.hitTarget(t)) {
 						Paint textPaint = new Paint();
 						textPaint.setColor(Color.WHITE);
-						textPaint.setTextSize(60);
+						textPaint.setTextSize(70);
 						canvas.drawText("HIT!", t.xTopLeft, t.yTopLeft, textPaint);
 						removeTargets.add(t);
 						removeBallsTwo.add(b);
@@ -308,24 +308,33 @@ public class CannonAnimator implements Animator {
 		canvas.drawText("TAP SCREEN TO BEGIN", centerScreenX - 250, centerScreenY +50, startPaint);
 	}
 
+	/**
+	 * Checks scores to see if someone won
+	 * used to call the endGameScreen for 200 ticks
+	 */
 	private void checkIfWin()
 	{
 		if(playerOneScore >= winningScore && playerTwoScore < winningScore)
 			{
-				endGameCooldown = 250;
+				endGameCooldown = 200;
 				gameStart = false;
 				winner = 1;
-				resetScores();
+				resetGame();
 			}
 			else if (playerTwoScore >= winningScore && playerOneScore < winningScore)
 			{
-				endGameCooldown = 250;
+				endGameCooldown = 200;
 				gameStart = false;
 				winner = 2;
-				resetScores();
+				resetGame();
 			}
 	}
 
+	/**
+	 * Prints the winner on the screen when the game finishes
+	 * @param winnerID used to decide text to display
+	 * @param canvas Canvas object
+     */
 	private void endScreen(int winnerID, Canvas canvas)
 	{
 		int centerScreenX = canvas.getWidth()/2;
@@ -344,6 +353,10 @@ public class CannonAnimator implements Animator {
 		}
 	}
 
+	/**
+	 * draws all objects on the canvas
+	 * @param g Canvas
+     */
 	private void drawAllObjects(Canvas g)
 	{
 		myFireButton.drawMe(g);
@@ -370,6 +383,9 @@ public class CannonAnimator implements Animator {
 		g.drawText("Player 2:"+playerTwoScore, 1500, 250, scorePaint);
 	}
 
+	/**
+	 * updates both player's cannonball positions
+	 */
 	private void updatePositions()
 	{
 		for (Cannonball b : playerOneCannonballs) {
@@ -384,37 +400,46 @@ public class CannonAnimator implements Animator {
 		}
 	}
 
+	/**
+	 * lets computer shoot cannon at a random angle
+	 */
 	private void computerActions()
 	{
 		boolean makeAction = artificialWaitTime();
-		if (makeAction)
+		if (makeAction && playerTwoFireCooldown == 0)
 		{
 			double angleDirection = Math.random();
 			double randomAngle = (Math.PI/2)*Math.random();
-			if(playerTwoFireCooldown == 0)
-			{
 				if(angleDirection>.5)
 				{
 					randomAngle = -randomAngle;
 				}
-				playerTwoCannon.shiftCannon(randomAngle + (Math.PI/2)); //add 90 for quadrant II
+				playerTwoCannon.shiftCannon(randomAngle);
 				shootCannon(playerTwoCannon);
 				playerTwoFireCooldown = cannonCoolDownTime;
-			}
-			else
-			{
-				playerTwoFireCooldown--;
-			}
+		}
+		if(playerTwoFireCooldown > 0) {
+			playerTwoFireCooldown--;
 		}
 	}
 
-	private void resetScores()
+	/**
+	 * after game finishes, used to reset the game
+	 */
+	private void resetGame()
 	{
 		playerOneScore = 0;
 		playerTwoScore = 0;
 		numTargets = 3;
+		targets.removeAll(targets);
+		playerOneCannonballs.removeAll(playerOneCannonballs);
+		playerTwoCannonballs.removeAll(playerTwoCannonballs);
 	}
 
+	/**
+	 * uses random number to make decision
+	 * @return whether or not computer takes action
+     */
 	private boolean artificialWaitTime()
 	{
 		double decision = Math.random();
@@ -427,4 +452,5 @@ public class CannonAnimator implements Animator {
 			return false;
 		}
 	}
-}//class TextAnimator
+
+}//class CannonAnimator

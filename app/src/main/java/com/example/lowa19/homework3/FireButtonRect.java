@@ -23,7 +23,7 @@ public class FireButtonRect
         buttonPaint.setStyle(Paint.Style.FILL);
         textPaint = new Paint();
         textPaint.setColor(Color.YELLOW);
-        textPaint.setTextSize(25);
+        textPaint.setTextSize(40);
     }
 
     public void drawMe(Canvas canvas)

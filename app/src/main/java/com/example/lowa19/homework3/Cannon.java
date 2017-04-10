@@ -224,8 +224,8 @@ public class Cannon
     public void initPlayerTwoCannon()
     {
         double dHeight = height;
-        double dWidth = -width;
-        topLeftAngle = Math.atan(dHeight/dWidth);
+        double dWidth = width;
+        topLeftAngle = Math.PI - Math.atan(dHeight/dWidth);
         topLeftDistance = Math.sqrt((height*height) + (width*width));
         topRightAngle = (Math.PI/2);
         bottomLeftAngle = Math.PI;

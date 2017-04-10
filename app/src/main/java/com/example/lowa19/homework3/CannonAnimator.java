@@ -27,7 +27,7 @@ public class CannonAnimator implements Animator {
 	private int endGameCooldown;
 	private int winner;
 	private int cannonCoolDownTime = 8;
-	private boolean titleUp = false;
+	private boolean startTextUp = false;
 	private int winningScore = 30;
 	//human player variables
 	private Cannon playerOneCannon;
@@ -285,27 +285,30 @@ public class CannonAnimator implements Animator {
 		int centerScreenX = canvas.getWidth()/2;
 		int centerScreenY = canvas.getHeight()/2;
 		Paint startPaint = new Paint();
-		startPaint.setColor(Color.WHITE);
-		startPaint.setTextSize(200);
-		if(titleUp)
+		startPaint.setColor(Color.RED);
+		startPaint.setTextSize(80);
+		if(startTextUp)
 		{
-			canvas.drawText("Cannon Game", centerScreenX - 610, centerScreenY - 210, startPaint);
-			startPaint.setTextSize(60);
-			titleUp = false;
+			canvas.drawText("TAP SCREEN TO BEGIN", centerScreenX - 380, centerScreenY +85, startPaint);
+			startTextUp = false;
 		}
 		else
 		{
-			canvas.drawText("Cannon Game", centerScreenX - 610, centerScreenY - 200, startPaint);
-			titleUp = true;
+			canvas.drawText("TAP SCREEN TO BEGIN", centerScreenX - 380, centerScreenY +90, startPaint);
+			startTextUp = true;
 		}
-
+		startPaint.setColor(Color.WHITE);
 		startPaint.setTextSize(60);
 		canvas.drawText("drag finger up and down to aim cannon", centerScreenX - 480,
 				centerScreenY - 100, startPaint);
 		canvas.drawText("first player to hit 30 targets wins",
-				centerScreenX - 480, centerScreenY - 50, startPaint);
-		startPaint.setColor(Color.RED);
-		canvas.drawText("TAP SCREEN TO BEGIN", centerScreenX - 250, centerScreenY +50, startPaint);
+				centerScreenX - 420, centerScreenY - 40, startPaint);
+		startPaint.setTextSize(200);
+		startPaint.setShadowLayer(8, 0.1f, 0.1f, Color.BLACK);
+		startPaint.setStrokeWidth(10);
+		startPaint.setStyle(Paint.Style.STROKE);
+		canvas.drawText("Cannon Game", centerScreenX - 610, centerScreenY - 200, startPaint);
+
 	}
 
 	/**
@@ -342,6 +345,9 @@ public class CannonAnimator implements Animator {
 		Paint endPaint = new Paint();
 		endPaint.setColor(Color.RED);
 		endPaint.setTextSize(140);
+		endPaint.setShadowLayer(8, 0.1f, 0.1f, Color.MAGENTA);
+		endPaint.setStrokeWidth(10);
+		endPaint.setStyle(Paint.Style.STROKE);
 		endPaint.setUnderlineText(true);
 
 		if(winnerID == 1)
@@ -446,7 +452,7 @@ public class CannonAnimator implements Animator {
 	private boolean artificialWaitTime()
 	{
 		double decision = Math.random();
-		if(decision > .45)
+		if(decision > .7)
 		{
 			return true;
 		}

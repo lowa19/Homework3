@@ -258,8 +258,8 @@ public class Cannon
         {
             this.topRight.x = this.wheelOrigin.x + (int)(height * Math.cos(topRightAngle));
             this.topRight.y = this.wheelOrigin.y - (int)(height * Math.sin(topRightAngle));
-            this.topLeft.x = this.wheelOrigin.x + (int)(topLeftDistance + Math.cos(topLeftAngle));
-            this.topLeft.y = this.wheelOrigin.y - (int)(topLeftDistance + Math.sin(topLeftAngle));
+            this.topLeft.x = this.wheelOrigin.x + (int)(topLeftDistance * Math.cos(topLeftAngle));
+            this.topLeft.y = this.wheelOrigin.y - (int)(topLeftDistance * Math.sin(topLeftAngle));
             this.bottomLeft.x = this.wheelOrigin.x + (int)(width * Math.cos(bottomLeftAngle));
             this.bottomLeft.y = this.wheelOrigin.y - (int)(width * Math.sin(bottomLeftAngle));
         }

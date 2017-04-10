@@ -342,14 +342,15 @@ public class CannonAnimator implements Animator {
 		Paint endPaint = new Paint();
 		endPaint.setColor(Color.RED);
 		endPaint.setTextSize(140);
+		endPaint.setUnderlineText(true);
 
 		if(winnerID == 1)
 		{
-			canvas.drawText( "Game Over Player One Wins", centerScreenX - 900, centerScreenY, endPaint);
+			canvas.drawText( "Game Over Player One Wins", centerScreenX - 880, centerScreenY, endPaint);
 		}
 		else
 		{
-			canvas.drawText( "Game Over Player Two Wins", centerScreenX - 900, centerScreenY, endPaint);
+			canvas.drawText( "Game Over Player Two Wins", centerScreenX - 880, centerScreenY, endPaint);
 		}
 	}
 
@@ -434,6 +435,8 @@ public class CannonAnimator implements Animator {
 		targets.removeAll(targets);
 		playerOneCannonballs.removeAll(playerOneCannonballs);
 		playerTwoCannonballs.removeAll(playerTwoCannonballs);
+		playerOneCannon = new Cannon(cannonPower, 1);
+		playerTwoCannon = new Cannon(cannonPower, 2);
 	}
 
 	/**
@@ -443,7 +446,7 @@ public class CannonAnimator implements Animator {
 	private boolean artificialWaitTime()
 	{
 		double decision = Math.random();
-		if(decision > .4)
+		if(decision > .45)
 		{
 			return true;
 		}

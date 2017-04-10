@@ -29,7 +29,7 @@ public class FireButtonRect
     public void drawMe(Canvas canvas)
     {
         canvas.drawRect(fireButton, buttonPaint);
-        canvas.drawText("FIRE!", 115, 125, textPaint);
+        canvas.drawText("FIRE!", 100, 125, textPaint);
     }
 
     /**
@@ -37,11 +37,11 @@ public class FireButtonRect
      * @param x x-pos of touch
      * @param y y-pos of touch
      * @return true if touch was inside 'button'
-     * 20 pixel leway
+     * 30 pixel leway
      */
     public boolean fireClick(int x, int y)
     {
-        if(x>=30 && x<=220 && y>=30 && y<=220)
+        if(x>=20 && x<=230 && y>=20 && y<=230)
         {
             return true;
         }
